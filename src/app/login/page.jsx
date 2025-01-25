@@ -18,7 +18,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      await fetch("http://localhost:5000/currentUser", {
+      await fetch("https://authentication-server-n5dd.onrender.com/currentUser", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

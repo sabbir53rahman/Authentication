@@ -28,7 +28,7 @@ const SignUp = () => {
   
     try {
       // Send user data to the backend
-      await fetch("http://localhost:5000/users", {
+      await fetch("https://authentication-server-n5dd.onrender.com/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
