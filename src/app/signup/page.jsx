@@ -1,6 +1,7 @@
 "use client";
+import { userContext } from "@/components/userContext";
 import Link from "next/link";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -10,7 +11,7 @@ const SignUp = () => {
     role: "User", // Default role
   });
 
-  const [users, setUsers] = useState([]); // Array to store user info
+  const {currentUser,setCurrentUser} = useContext(userContext); 
 
   // Handle input changes
   const handleChange = (e) => {
@@ -24,39 +25,52 @@ const SignUp = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       // Send user data to the backend
-      const response = await fetch("http://localhost:5000/users", {
+      await fetch("http://localhost:5000/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      });
+      })
+        .then((res) => {
+          if (!res.ok) {
+            // Stop the promise chain and throw an error
 
-      if (!response.ok) {
-        throw new Error("Failed to save user");
-      }
+            return alert("Failed to save user");
+          }else{
+            return res.json();
+          }
+        })
+        .then((data) => {
+          // Successfully saved user
+          alert("User saved successfully");
+  
+          console.log(formData)
 
-      const savedUser = await response.json();
+          setCurrentUser(formData);
+          console.log(`Current User: ${currentUser}` )
 
-      // Add the newly saved user to the local state
-      setUsers((prevUsers) => [...prevUsers, savedUser]);
-
-      // Clear the form after submission
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        role: "User",
-      });
-
-      console.log("User saved successfully:", savedUser);
+  
+          // Clear the form after submission
+          setFormData({
+            name: "",
+            email: "",
+            password: "",
+            role: "User",
+          });
+  
+          console.log("User saved successfully:", data);
+        });
     } catch (error) {
+      // Handle errors
       console.error("Error saving user:", error);
+      alert(error.message); // Show the error message in an alert
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -144,7 +158,12 @@ const SignUp = () => {
             Sign Up
           </button>
         </form>
-        <p>Already have an account? <span className="underline hover:text-blue-500"><Link href="/login"> log in here </Link></span></p>
+        <p>
+          Already have an account?{" "}
+          <span className="underline hover:text-blue-500">
+            <Link href="/login"> log in here </Link>
+          </span>
+        </p>
       </div>
     </div>
   );

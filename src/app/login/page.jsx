@@ -1,12 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { userContext } from "@/components/userContext";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+  const {currentUser ,setCurrentUser } = useContext(userContext);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,34 +16,31 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
-  
+
     try {
-      console.log("Fetching users...");
-      const response = await fetch("http://localhost:5000/users");
-      const users = await response.json();
-      console.log("Fetched users:", users);
-  
-      const user = users.find((u) => u.email === formData.email);
-  
-      if (!user) {
-        setErrorMessage("Status: Not Found!");
-        return;
-      }
-  
-      if (user.password !== formData.password) {
-        setErrorMessage("Status: Wrong Pass!");
-        return;
-      }
-  
-      console.log("Login successful:", user);
-      router.push("/");
+      await fetch("http://localhost:5000/currentUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setCurrentUser(data.data);
+          alert(data.message);
+          router.push("/"); 
+        });
     } catch (error) {
       console.error("Error during login:", error);
-      setErrorMessage("Something went wrong. Please try again later.");
     }
   };
-  
+
+  // UseEffect to log currentUser after it is updated
+  useEffect(() => {
+    console.log(currentUser);
+  }, [currentUser]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -83,13 +81,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Error Message */}
-          {errorMessage && (
-            <div className="mb-4 text-red-500 text-sm font-medium">
-              {errorMessage}
-            </div>
-          )}
-
           {/* Submit Button */}
           <button
             type="submit"
@@ -99,7 +90,12 @@ const Login = () => {
           </button>
         </form>
 
-        <p>Don't have any account? <span className="underline hover:text-blue-500"><Link href={"/signup"}>register</Link>  </span></p>
+        <p>
+          Don't have an account?{" "}
+          <span className="underline hover:text-blue-500">
+            <Link href="/signup">Register</Link>
+          </span>
+        </p>
       </div>
     </div>
   );
