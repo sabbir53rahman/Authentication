@@ -2,9 +2,11 @@
 import { userContext } from "@/components/userContext";
 import { useRouter } from "next/navigation";
 import React, { useContext } from "react";
+import { useSelector } from "react-redux";
 
 function Admin() {
-  const { currentUser } = useContext(userContext);
+  const currentUser = useSelector((state) => state.user.currentUser);
+  console.log("Current Redux User:", currentUser);
   const router = useRouter();
   if (
     currentUser?.role === "Admin" ||

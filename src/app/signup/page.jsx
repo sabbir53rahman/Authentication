@@ -1,7 +1,11 @@
 "use client";
 import { userContext } from "@/components/userContext";
+import { addUser } from "@/redux/userSlice";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
+import { useDispatch } from "react-redux";
+
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -11,7 +15,10 @@ const SignUp = () => {
     role: "User", // Default role
   });
 
-  const {currentUser,setCurrentUser} = useContext(userContext); 
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  //const {currentUser,setCurrentUser} = useContext(userContext); 
 
   // Handle input changes
   const handleChange = (e) => {
@@ -45,13 +52,9 @@ const SignUp = () => {
           }
         })
         .then((data) => {
-          // Successfully saved user
-          alert("User saved successfully");
-  
-          console.log(formData)
 
-          setCurrentUser(formData);
-          console.log(`Current User: ${currentUser}` )
+          //dispatch(addUser(data.data))
+          console.log(data)
 
   
           // Clear the form after submission

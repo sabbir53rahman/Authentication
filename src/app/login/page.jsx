@@ -3,11 +3,14 @@ import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { userContext } from "@/components/userContext";
+import { useDispatch } from "react-redux";
+import { addUser } from "@/redux/userSlice";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const dispatch = useDispatch();
   const router = useRouter();
-  const {currentUser ,setCurrentUser } = useContext(userContext);
+  //const {currentUser ,setCurrentUser } = useContext(userContext);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +31,7 @@ const Login = () => {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-          setCurrentUser(data.data);
+          dispatch(addUser(data.data));
           alert(data.message);
           router.push("/"); 
         });
@@ -38,9 +41,9 @@ const Login = () => {
   };
 
   // UseEffect to log currentUser after it is updated
-  useEffect(() => {
-    console.log(currentUser);
-  }, [currentUser]);
+  // useEffect(() => {
+  //   console.log(currentUser);
+  // }, [currentUser]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
